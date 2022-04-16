@@ -25,7 +25,7 @@ export default {
   methods: {
     itemClick() {
       // 监听tabbar点击事件
-      this.$router.replace(this.path)
+      this.$router.replace(this.path).catch(err => err)
     }
   },
   computed: {
