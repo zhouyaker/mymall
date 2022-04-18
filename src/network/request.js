@@ -4,7 +4,7 @@ export function request(config) {
   return new Promise((resolve, reject) => {
     // 创建axios实例
     const instance = axios.create({
-      baseURL: '../../json',
+      baseURL: 'http://127.0.0.1:3000',
       timeout: 5000
     })
 

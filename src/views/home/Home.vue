@@ -14,7 +14,7 @@
       <!-- 本周流行 -->
       <this-week @weekImgIsLoad="weekImg=true;allImgIsLoad()" />
       <!-- 内容标签页 -->
-      <tabs ref="tabs" :titles="['流行','新款','精选']" @tabClick="tabClick" />
+      <tabs ref="tabs" :titles="['女装','新款','精选']" @tabClick="tabClick" />
       <goods-list :goods="goods[currentType].list" />
     </scroll>
     <!-- 返回顶部 -->
@@ -33,18 +33,21 @@ import Scroll from 'components/common/scroll/Scroll.vue'
 import BackTop from 'components/content/backtop/BackTop.vue'
 
 import { getHomeData, getGoods } from 'network/home.js'
+import { itemListenerMaxin } from '../../common/maxin.js'
 export default {
   name: 'Home',
+  // 混入
+  mixins: [itemListenerMaxin],
   data() {
     return {
       banners: [],
       subject: [],
       goods: {
-        fashion: { page: 0, list: [] },
+        woman: { page: 0, list: [] },
         newStyle: { page: 0, list: [] },
         handpick: { page: 0, list: [] }
       },
-      currentType: 'fashion',
+      currentType: 'woman',
       isShow: false,
       tabOffsetTop: 0,
       isTabsShow: false,
@@ -75,11 +78,11 @@ export default {
       })
     },
     getGoods_fuc(type) {
-      const page = this.goods[type].page + 1
+      const page = this.goods[type].page
       // 需要传入参数getGoods(type, page)
       getGoods(type, page).then(res => {
         // 每次请求当前页码的下一页数据
-        this.goods[type].list.push(...res)
+        this.goods[type].list.push(...res.data)
         this.goods[type].page += 1
         // 完成加载，调用函数保证下次正常加载
         this.$refs.scroll.finishLoad()
@@ -89,16 +92,9 @@ export default {
      * 事件监听相关方法
      */
     tabClick(index) {
-      // console.log(index)
       switch (index) {
         case 0:
-          this.currentType = 'fashion'
-          break
-        case 1:
-          this.currentType = 'newStyle'
-          break
-        case 2:
-          this.currentType = 'handpick'
+          this.currentType = 'woman'
           break
       }
       this.$refs.tabs_copy.currentIndex = index
@@ -123,16 +119,6 @@ export default {
         this.isTabsShow = false
       }
     },
-    // 防抖函数
-    debounce(func, time) {
-      let timer = null
-      return function () {
-        if (timer) clearTimeout(timer)
-        timer = setTimeout((...args) => {
-          func.apply(this, args)
-        }, time)
-      }
-    },
     // 上拉加载更多
     loadMore() {
       this.getGoods_fuc(this.currentType)
@@ -152,25 +138,14 @@ export default {
   },
   created() {
     this.getHomeData_fuc()
-    this.getGoods_fuc('fashion')
-    this.getGoods_fuc('newStyle')
-    this.getGoods_fuc('handpick')
-  },
-  mounted() {
-    /**
-     * 监听事件总线中的每张图片加载
-     */
-    const refresh = this.debounce(this.$refs.scroll.reFresh)
-    this.$bus.$on('loadFinish', () => {
-      // 刷新可滚动区域高度
-      refresh()
-    })
+    this.getGoods_fuc('woman')
   },
   activated() {
     this.$refs.scroll.scrollTo(0, this.saveY)
     this.$refs.scroll.reFresh()
   },
   deactivated() {
+    // 保存当前浏览的位置
     this.saveY = this.$refs.scroll.getScrollY()
   }
 }
