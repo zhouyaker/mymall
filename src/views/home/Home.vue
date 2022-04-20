@@ -30,14 +30,13 @@ import ThisWeek from './childrenComps/ThisWeek.vue'
 import Tabs from 'components/common/tabs/Tabs.vue'
 import GoodsList from 'components/content/goods/GoodsList.vue'
 import Scroll from 'components/common/scroll/Scroll.vue'
-import BackTop from 'components/content/backtop/BackTop.vue'
 
 import { getHomeData, getGoods } from 'network/home.js'
-import { itemListenerMaxin } from '../../common/maxin.js'
+import { itemListenerMaxin, backTopMaxin } from '../../common/maxin.js'
 export default {
   name: 'Home',
   // 混入
-  mixins: [itemListenerMaxin],
+  mixins: [itemListenerMaxin, backTopMaxin],
   data() {
     return {
       banners: [],
@@ -48,7 +47,6 @@ export default {
         handpick: { page: 0, list: [] }
       },
       currentType: 'woman',
-      isShow: false,
       tabOffsetTop: 0,
       isTabsShow: false,
       swiperImg: false,
@@ -64,8 +62,7 @@ export default {
     ThisWeek,
     Tabs,
     GoodsList,
-    Scroll,
-    BackTop
+    Scroll
   },
   methods: {
     /**
@@ -99,10 +96,6 @@ export default {
       }
       this.$refs.tabs_copy.currentIndex = index
       this.$refs.tabs.currentIndex = index
-    },
-    backClick() {
-      // 点击后500毫秒回到顶部
-      this.$refs.scroll.scrollTo(0, 0, 500)
     },
     // 获取滚动位置
     getposition(position) {

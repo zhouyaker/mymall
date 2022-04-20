@@ -34,7 +34,9 @@
         </div>
       </div>
     </scroll>
-    <bottom-bar />
+    <!-- 返回顶部 -->
+    <back-top @click.native="backClick" v-show="isShow" />
+    <bottom-bar @addCart="addCart" />
   </div>
 </template>
 
@@ -46,17 +48,11 @@ import GoodsList from 'components/content/goods/GoodsList.vue'
 import BottomBar from './childrenComps/DetailBottomBar.vue'
 
 import { getDetail, getComments, getRecommend } from 'network/detail.js'
-import { itemListenerMaxin } from '../../common/maxin.js'
+import { itemListenerMaxin, backTopMaxin } from '../../common/maxin.js'
 import { debounce } from '@/common/utils'
 export default {
   name: 'Detail',
-  components: {
-    DetailNavBar,
-    Scroll,
-    CommentInfo,
-    GoodsList,
-    BottomBar
-  },
+  mixins: [itemListenerMaxin, backTopMaxin],
   data() {
     return {
       id: null,
@@ -75,7 +71,13 @@ export default {
       currentIndex: null
     }
   },
-  mixins: [itemListenerMaxin],
+  components: {
+    DetailNavBar,
+    Scroll,
+    CommentInfo,
+    GoodsList,
+    BottomBar
+  },
   created() {
     /**
      * 加载页面数据
@@ -145,6 +147,24 @@ export default {
           }, 600)
         }
       }
+      // 判断回到顶部箭头是否显示
+      if (-position.y >= 1000) {
+        this.isShow = true
+      } else {
+        this.isShow = false
+      }
+    },
+    // 添加到购物车事件
+    addCart() {
+      // 图片  价格 个数
+      const obj = {}
+      obj.id = this.id
+      obj.img = this.coverImg
+      obj.title = this.title
+      obj.price = this.price.split('~')[0]
+      this.$store.dispatch('addCart', obj).then(res => {
+        this.$toast.show(res, 1500)
+      })
     }
   }
 }

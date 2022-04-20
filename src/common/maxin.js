@@ -1,4 +1,5 @@
 import { debounce } from "./utils"
+import BackTop from 'components/content/backtop/BackTop.vue'
 export const itemListenerMaxin = {
   mounted() {
     /**
@@ -9,4 +10,21 @@ export const itemListenerMaxin = {
       refresh()
     })
   }
+}
+export const backTopMaxin = {
+  components: {
+    BackTop
+  },
+  data() {
+    return {
+      isShow: false
+    }
+  },
+  methods: {
+    // 点击后500毫秒回到顶部
+    backClick() {
+      this.$refs.scroll.scrollTo(0, 0, 500)
+    }
+  }
+
 }
